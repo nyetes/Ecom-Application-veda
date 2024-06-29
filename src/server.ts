@@ -31,8 +31,9 @@ const adminJs = new AdminJS({
   rootPath: "/admin",
 });
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// app.use(express.json());
+// app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 // routes
 app.use("/api", productsRouter);

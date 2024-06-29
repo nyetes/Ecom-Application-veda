@@ -15,8 +15,8 @@ async function fetchAndStoreProducts() {
           description: product.description,
           price: product.price,
           rating: product.rating,
-          stock: product.stock ?? 0, // Default to 0 if not provided
-          image: product.image ?? "", // Default to empty string if not provided
+          stock: product.stock ?? 0,
+          image: product.image ?? "",
           category: {
             connectOrCreate: {
               where: { name: product.category },

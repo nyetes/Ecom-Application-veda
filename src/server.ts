@@ -35,7 +35,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 
-//routes
+// routes
 app.use("/api", productsRouter);
 app.use("/admin", adminRouter);
 

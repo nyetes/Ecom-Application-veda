@@ -1,47 +1,58 @@
 import express from "express";
 import bodyParser from "body-parser";
-// import adminRouter from "./admin";
-// import AdminJS from "adminjs";
-// import AdminJSExpress from "@adminjs/express";
-// import { PrismaClient } from "@prisma/client";
-// import { Database, Resource } from "@adminjs/prisma";
+import { PrismaClient } from "@prisma/client";
 
 import productsRouter from "./routes/products";
-import adminRouter from "./admin";
 
-// const prisma = new PrismaClient();
-// AdminJS.registerAdapter({ Database, Resource });
+const prisma = new PrismaClient();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// const adminJs = new AdminJS({
-//   resources: [
-//     {
-//       resource: { model: prisma.product },
-//       options: {
-//         listProperties: ["image", "title", "category", "price", "rating"],
-//       },
-//     },
-//     {
-//       resource: { model: prisma.category },
-//       options: {
-//         listProperties: ["name"],
-//       },
-//     },
-//   ],
-//   rootPath: "/admin",
-// });
+let AdminJS;
+let AdminJSExpress;
+let Database;
+let Resource;
 
-app.use(bodyParser.json());
+Promise.all([
+  import("adminjs"),
+  import("@adminjs/express"),
+  import("@adminjs/prisma"),
+]).then(([adminjs, adminjsExpress, adminjsPrisma]) => {
+  AdminJS = adminjs.default;
+  AdminJSExpress = adminjsExpress.default;
+  Database = adminjsPrisma.Database;
+  Resource = adminjsPrisma.Resource;
 
-// routes
-app.use("/api", productsRouter);
-app.use("/admin", adminRouter);
+  AdminJS.registerAdapter({ Database, Resource });
 
-// const adminRouter = AdminJSExpress.buildRouter(adminJs);
-// app.use(adminJs.options.rootPath, adminRouter);
+  const adminJs = new AdminJS({
+    resources: [
+      {
+        resource: { model: prisma.product },
+        options: {
+          listProperties: ["image", "title", "category", "price", "rating"],
+        },
+      },
+      {
+        resource: { model: prisma.category },
+        options: {
+          listProperties: ["name"],
+        },
+      },
+    ],
+    rootPath: "/admin",
+  });
 
-app.listen(PORT, () =>
-  console.log(`Server running on port http://localhost:${PORT}`)
-);
+  app.use(bodyParser.json());
+
+  // routes
+  app.use("/api", productsRouter);
+
+  const adminRouter = AdminJSExpress.buildRouter(adminJs);
+  app.use(adminJs.options.rootPath, adminRouter);
+
+  app.listen(PORT, () =>
+    console.log(`Server running on port http://localhost:${PORT}`)
+  );
+});

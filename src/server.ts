@@ -31,8 +31,8 @@ const adminJs = new AdminJS({
   rootPath: "/admin",
 });
 
-app.use(express.json()); // replaced bodyParser.json() with express.json()
-app.use(express.urlencoded({ extended: true })); // added to support URL-encoded bodies
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // routes
 app.use("/api", productsRouter);
